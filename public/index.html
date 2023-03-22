@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realtime video watcher</title>
+  </head>
+  <body>
+    <video controls>
+      <source src="movie.mp4" />
+    </video>
+
+    <script src="socket.io.min.js"></script>
+    <script>
+      const socket = io();
+      const video = document.querySelector("video");
+
+      video.addEventListener("pause", () => {
+        socket.emit("pause");
+      });
+
+      video.addEventListener("play", () => {
+        socket.emit("play");
+      });
+
+      video.addEventListener("seeked", () => {
+        socket.emit("updateTime", video.currentTime);
+      });
+
+      socket.on("played", () => {
+        if (video.paused) video.play();
+      });
+
+      socket.on("paused", () => {
+        if (!video.paused) video.pause();
+      });
+
+      socket.on("updatedTime", (time) => {
+        if (video.currentTime !== time) video.currentTime = time;
+      });
+    </script>
+  </body>
+</html>
