@@ -16,7 +16,9 @@ const server = app.listen(8000, () => {
 const io = new Server(server);
 
 io.on("connection", (socket) => {
-  socket.on("play", () => socket.broadcast.emit("played"));
-  socket.on("pause", () => socket.broadcast.emit("paused"));
-  socket.on("updateTime", (time) => socket.broadcast.emit("updatedTime", time));
+  socket.on("play", (userId) => socket.broadcast.emit("played", userId));
+  socket.on("pause", (userId) => socket.broadcast.emit("paused", userId));
+  socket.on("updateTime", ({ userId, time }) => {
+    socket.broadcast.emit("updatedTime", { userId, time });
+  });
 });
