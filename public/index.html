@@ -15,31 +15,30 @@
     <script>
       const socket = io();
       const video = document.querySelector("video");
-      const id = new Date().getTime();
 
       video.addEventListener("pause", () => {
-        socket.emit("pause", id);
+        socket.emit("pause");
       });
 
       video.addEventListener("play", () => {
-        socket.emit("play", id);
+        socket.emit("play");
       });
 
       video.addEventListener("seeked", () => {
-        socket.emit("updateTime", { userId: id, time: video.currentTime });
+        socket.emit("updateTime", Math.floor(video.currentTime));
       });
 
-      socket.on("played", (userId) => {
-        if (id !== userId && video.paused) video.play();
+      socket.on("played", () => {
+        if (video.paused) video.play();
       });
 
       socket.on("paused", (userId) => {
-        if (id !== userId && !video.paused) video.pause();
+        if (!video.paused) video.pause();
       });
 
-      socket.on("updatedTime", ({ userId, time }) => {
-        if (id !== userId && video.currentTime !== time) {
-          video.currentTime = time;
+      socket.on("updatedTime", (time) => {
+        if (Math.floor(video.currentTime) !== Math.floor(time)) {
+          video.currentTime = Math.floor(time);
         }
       });
     </script>
